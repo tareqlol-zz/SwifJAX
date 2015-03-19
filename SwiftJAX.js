@@ -1,11 +1,11 @@
-var SwiftAjax = function(){
+var SwifJAX = function(){
 	
 	function ajaxCaller(Adata){
 		// Ajax Caller Function
 		
 	}
 
-	function swiftJAXBootstrapper(BTpayload){
+	function swifJAXBootstrapper(BTpayload){
 
 		if(getActionType(BTpayload) && getActionData(BTpayload)){
 			console.log('up')
@@ -46,7 +46,7 @@ var SwiftAjax = function(){
 	}
 	function throwSwift(){
 		throw {
-				name:'SwiftJAX',
+				name:'SwifJAX',
 				message:'Opps, the data is missing. Destroying the object!'
 			};
 		return false;
@@ -58,7 +58,7 @@ var SwiftAjax = function(){
 
 	return {
 		execute : function(BTpayload){
-			new swiftJAXBootstrapper(BTpayload);
+			new swifJAXBootstrapper(BTpayload);
 		},
 		getQue : function(BTpayload){
 			return "Que";

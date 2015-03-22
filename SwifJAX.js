@@ -6,7 +6,7 @@ var SwifJAX = function(Mapper){
 		var xhr = typeof XMLHttpRequest != 'undefined'
             ? new XMLHttpRequest()
             : new ActiveXObject('Microsoft.XMLHTTP');
-        xhr.onreadystatechange = function() {
+        xhr.onreadystatechange = function() { 
             var status;
             if (xhr.readyState == 4) { // done ?
                 status = xhr.status;

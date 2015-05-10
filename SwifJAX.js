@@ -1,5 +1,12 @@
 var SwifJAX = function(Mapper){
-    var ActionMapper = Mapper;
+    'use strict';
+    var ActionMapper = Mapper,
+        SwifJAXEventsArray = [
+            'swClick',
+            'swChange',
+            'swSubmit'
+        ];
+    initSwifJAX();
     /**
      ** xhrCaller **
      * Creates a XHR Object loaded by the data
@@ -16,8 +23,8 @@ var SwifJAX = function(Mapper){
             if (xhr.readyState == 4) { // done ?
                 status = xhr.status;
                 if (status == 200) { // status code ok ?
+                    var callBack
                     if(isThisUndefined(swifJAXObject.Functionality['success'])){
-
                     }
                     // Call the passed Success function passed by params , and the related object
                     swifJAXObject.Functionality['success'](this.responseText,swifJAXObject.Functionality.triggerer);
@@ -53,7 +60,7 @@ var SwifJAX = function(Mapper){
             ActionData : currentActionData,
             // Setting the action functionality from the Action Mapper to the Instance.
             Functionality : currentFunctionality
-        }
+        };
 
         // check if the object is a dom object to pass it to the Instance.
         if(SWpayload.tagName){
@@ -64,6 +71,47 @@ var SwifJAX = function(Mapper){
 
         return xhrCaller(SWXHRObject);
 
+    }
+    /**
+     ** initSwifJAX **
+     * Initiate the SwifJAX by adding a class of 'SwifJAX' , calling after that the event delegation.
+     * */
+    function initSwifJAX(){
+        // getting the html element.
+        var html = document.getElementsByTagName('html')[0],
+        // getting the current classes.
+            currentClasses = html.className;
+        // setting the plugin's class to the html.
+        html.className =  'SwifJAX ' + currentClasses;
+
+        // delegate the html elements
+        delegateEvents(html)
+    }
+    /**
+    ** delegateEvents **
+    * delegates the predefined events of SwifJAX
+     * @param : obj {object}
+    * */
+    function delegateEvents(obj){
+        var eventsLength = SwifJAXEventsArray.length - 1;
+        // Self-Invoked Function to loop through the events
+        (function eventsBindingLoop(){
+            // Caching the current event
+            var currentEvent = SwifJAXEventsArray[eventsLength];
+            // Delegating the events on the html page, getting the current event by replacing the sw of the name of the event
+            // swClick -> click
+            crossAddEventHandler(obj,currentEvent.replace('sw','').toLowerCase(),function(e){
+                var target = e ? e.target : window.event.srcElement;
+                if(target.className.search(currentEvent) != -1){
+                    swifJAXBootstrapper(target);
+                }
+            });
+            if(eventsLength == 0){
+                return;
+            }
+            eventsLength--;
+            eventsBindingLoop();
+        })(SwifJAXEventsArray,eventsLength,obj)
     }
     /**
      ** getActionRelatedData **
@@ -179,7 +227,28 @@ var SwifJAX = function(Mapper){
     function getType(theThing){
         return typeof theThing;
     }
-
+    /**
+     ** crossAddEventHandler **
+     * helper function to support multi browser event handler
+     * @param obj {object}
+     * @param evt {string}
+     * @param handler {function}
+     * */
+    function crossAddEventHandler(obj, evt, handler) {
+        if(obj.addEventListener) {
+            // W3C method
+            obj.addEventListener(evt, handler, false);
+        } else if(obj.attachEvent) {
+            // IE method.
+            obj.attachEvent('on'+evt, handler);
+        } else {
+            // Old school method.
+            obj['on'+evt] = handler;
+        }
+    }
+    /**
+     ** Revealing the SwifJAX methods **
+     */
     return {
         execute : function(SWpayload){
             if(getActionType(SWpayload) && getActionData(SWpayload)){
